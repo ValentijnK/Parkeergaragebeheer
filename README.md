@@ -12,8 +12,6 @@ Links
 
 [Automatic License Plate Recognition](https://openalpr.com) Kentekens herkennen van foto's of video's.
 
-[Kenteken Generator](http://kenteken.tv/kenteken.php) Maak snel en eenvoudig een kentekenplaat. (Betere resultaten ALPR.)
-
 Dependencies
 ------------
 
