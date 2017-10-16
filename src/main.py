@@ -2,8 +2,8 @@ import requests
 import re
 
 # API keys
-rdwAPI = 'bd91216bb4b6879946c210cdf9dbdfdb00fc75e031816a3c1d89be31ba3512fc'
-alprAPI = 'sk_25f871e3d65e30b86d749fe3'
+rdwAPI = ''
+alprAPI = ''
 
 # Url endpoints
 rdwUrl = 'https://overheid.io/api/voertuiggegevens/'
