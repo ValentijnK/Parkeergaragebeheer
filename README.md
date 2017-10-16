@@ -22,7 +22,6 @@ Voer dit commando uit om direct alle dependencies te installeren
 ```
 cd to/project/root
 pip install -r requirements.txt
-
 ```
 
 [Requests](http://docs.python-requests.org/en/master/) HTTP for Humans
