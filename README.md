@@ -13,3 +13,16 @@ Links
 [Automatic License Plate Recognition](https://openalpr.com) Kentekens herkennen van foto's of video's.
 
 [Kenteken Generator](http://kenteken.tv/kenteken.php) Maak snel en eenvoudig een kentekenplaat. (Betere resultaten ALPR.)
+
+Dependencies
+------------
+
+Voer dit commando uit om direct alle dependencies te installeren
+
+```
+cd to/project/root
+pip install -r requirements.txt
+
+```
+
+[Requests](http://docs.python-requests.org/en/master/) HTTP for Humans
