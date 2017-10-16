@@ -12,6 +12,8 @@ Links
 
 [Automatic License Plate Recognition](https://openalpr.com) Kentekens herkennen van foto's of video's.
 
+[Nederlandse kentekens](https://nl.wikipedia.org/wiki/Nederlands_kenteken) Kenteken sidecodes en informatie
+
 Dependencies
 ------------
 
