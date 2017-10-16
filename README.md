@@ -8,5 +8,8 @@ Data moet beveiligd worden opgeslagen.
 Links
 -----
 
-[RDW API](https://overheid.io)
-[Automatic License Plate Recognition](https://openalpr.com)
+[RDW API](https://overheid.io) Ophalen van gegevens op basis van kenteken.
+
+[Automatic License Plate Recognition](https://openalpr.com) Kentekens herkennen van foto's of video's.
+
+[Kenteken Generator](http://kenteken.tv/kenteken.php) Maak snel en eenvoudig een kentekenplaat. (Betere resultaten ALPR.)
