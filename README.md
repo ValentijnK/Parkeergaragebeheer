@@ -25,3 +25,5 @@ pip install -r requirements.txt
 ```
 
 [Requests](http://docs.python-requests.org/en/master/) HTTP for Humans
+
+[PyMySQL](https://pymysql.readthedocs.io/en/latest/user/index.html)
