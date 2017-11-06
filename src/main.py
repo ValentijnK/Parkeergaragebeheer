@@ -1,9 +1,11 @@
 import requests
 import re
+import pymysql.cursors
+from datetime import datetime
 
 # API keys
-rdwAPI = ''
-alprAPI = ''
+rdwAPI = 'bd91216bb4b6879946c210cdf9dbdfdb00fc75e031816a3c1d89be31ba3512fc'
+alprAPI = 'sk_25f871e3d65e30b86d749fe3'
 
 # Url endpoints
 rdwUrl = 'https://overheid.io/api/voertuiggegevens/'
@@ -52,6 +54,32 @@ def getLicensePlate(photoPath):
 
 def getVehicleInfo(license):
     r = requests.get(rdwUrl + license, headers=rdwHeaders)
-    print(r.json())
+    return r.json()
 
-getVehicleInfo(getLicensePlate('kenteken.png'))
+def acceptRequest(vehicle):
+    fuel = vehicle['hoofdbrandstof']
+    if fuel == 'Benzine':
+        check_in(vehicle)
+    else:
+        max_date = datetime.strptime('2001-01-01', '%Y-%m-%d')
+        date_afgiteDatum = datetime.strptime(str(vehicle['datumeersteafgiftenederland'])[:10], '%Y-%m-%d')
+        if date_afgiteDatum > max_date:
+            check_in(vehicle)
+        else:
+            print('Sorry, maar deze vervuilende diesel mag er niet.')
+
+def check_in(vehicle):
+    connection = pymysql.connect(host='localhost',
+                                 user='root',
+                                 password='',
+                                 db='parkeergarage',
+                                 cursorclass=pymysql.cursors.DictCursor)
+    try:
+        with connection.cursor() as cursor:
+            sql = "INSERT INTO `cars` (`license_plate`) VALUES (%s)"
+            cursor.execute(sql, str(vehicle['kenteken']))
+            connection.commit()
+    finally:
+        connection.close()
+
+print(acceptRequest(getVehicleInfo(getLicensePlate('kenteken_2.jpg'))))
