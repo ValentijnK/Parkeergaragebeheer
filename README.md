@@ -27,3 +27,5 @@ pip install -r requirements.txt
 [Requests](http://docs.python-requests.org/en/master/) HTTP for Humans
 
 [PyMySQL](https://pymysql.readthedocs.io/en/latest/user/index.html) MySQL connector for Python3
+
+[PyCrypto](https://pythonprogramming.net/encryption-and-decryption-in-python-code-example-with-explanation/) AES data encryption
