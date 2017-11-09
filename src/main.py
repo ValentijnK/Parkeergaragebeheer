@@ -18,9 +18,6 @@ alprUrl = 'https://api.openalpr.com/v2/recognize?secret_key=' + alprAPI + '&reco
 # Headers
 rdwHeaders = {'ovio-api-key': rdwAPI}
 
-# secret = b"\xb7\x7fSV\xa1\nUz\x1e\xc5\xd5\x19[<\xc7\xfe"
-
-
 # API call to get license plate
 def getLicensePlate(photoPath):
     file = {'image': ('image', open('license_plates/' + photoPath, 'rb'))}
@@ -135,7 +132,7 @@ def encrypt_info(info):
     encoded = EncodeAES(cipher, info)
     return encoded
 
-# Extra Opdracht
+# Extra Assignment
 def billing(license):
     encrypted_license = encrypt_info(license)
     connection = pymysql.connect(host='localhost',
@@ -172,10 +169,7 @@ def billing(license):
 
     print('Er wordt een factuur verzonden naar ' + str(email))
 
-
-
-
-license = getLicensePlate('kenteken_2.jpg')
+license = getLicensePlate('kenteken_3.jpg')
 
 if(check_if_exist(license) is None):
     vehicle = getVehicleInfo(license)
