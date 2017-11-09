@@ -120,8 +120,7 @@ def check_if_exist(license):
     finally:
         connection.close()
 
-
-def encrypt_info(license):
+def encrypt_info(info):
     # A block size of 16 equals 128 bits
     BLOCK_SIZE = 16
     PADDING = '{'
@@ -133,14 +132,54 @@ def encrypt_info(license):
     # Generate the cipher object using the key
     cipher = AES.new(secret)
     # encode the license plate
-    encoded = EncodeAES(cipher, license)
+    encoded = EncodeAES(cipher, info)
     return encoded
 
-# print(acceptRequest(getVehicleInfo(getLicensePlate('kenteken.png'))))
-license = getLicensePlate('kenteken.png')
+# Extra Opdracht
+def billing(license):
+    encrypted_license = encrypt_info(license)
+    connection = pymysql.connect(host='localhost',
+                                 user='root',
+                                 password='',
+                                 db='parkeergarage',
+                                 cursorclass=pymysql.cursors.DictCursor)
+    try:
+        with connection.cursor() as cursor:
+            sql = "SELECT * FROM `cars` WHERE `license_plate` = %s"
+            cursor.execute(sql, encrypted_license)
+            result = cursor.fetchone()
+    finally:
+        connection.close()
+
+    total_seconds = (result['garage_leave_time'] - result['garage_entry_time']).total_seconds()
+    m, s = divmod(total_seconds, 60)
+    h, m = divmod(m, 60)
+    print("De parkeertijd bedroeg %d uur %02d minuten %02d seconden" % (h, m, s) + ' op kenteken ' + license)
+    email = input('Vul hier uw e-mailadres in:')
+
+    billing_connection = pymysql.connect(host='localhost',
+                                 user='root',
+                                 password='',
+                                 db='parkeergarage',
+                                 cursorclass=pymysql.cursors.DictCursor)
+    try:
+        with billing_connection.cursor() as cursor:
+            sql = "UPDATE `cars` SET `garage_entry_time` = garage_entry_time, `garage_leave_time` = garage_leave_time, `email` = %s WHERE `license_plate` = %s"
+            cursor.execute(sql, (encrypt_info(email),encrypted_license))
+            billing_connection.commit()
+    finally:
+        billing_connection.close()
+
+    print('Er wordt een factuur verzonden naar ' + str(email))
+
+
+
+
+license = getLicensePlate('kenteken_2.jpg')
 
 if(check_if_exist(license) is None):
     vehicle = getVehicleInfo(license)
     acceptRequest(vehicle, license)
 else:
     check_out(license)
+    billing(license)
