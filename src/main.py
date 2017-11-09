@@ -2,6 +2,10 @@ import requests
 import re
 import pymysql.cursors
 from datetime import datetime
+# Encryption Imports
+from Crypto.Cipher import AES
+import base64
+import os
 
 # API keys
 rdwAPI = 'bd91216bb4b6879946c210cdf9dbdfdb00fc75e031816a3c1d89be31ba3512fc'
@@ -13,6 +17,8 @@ alprUrl = 'https://api.openalpr.com/v2/recognize?secret_key=' + alprAPI + '&reco
 
 # Headers
 rdwHeaders = {'ovio-api-key': rdwAPI}
+
+# secret = b"\xb7\x7fSV\xa1\nUz\x1e\xc5\xd5\x19[<\xc7\xfe"
 
 
 # API call to get license plate
@@ -56,19 +62,19 @@ def getVehicleInfo(license):
     r = requests.get(rdwUrl + license, headers=rdwHeaders)
     return r.json()
 
-def acceptRequest(vehicle):
+def acceptRequest(vehicle, license):
     fuel = vehicle['hoofdbrandstof']
     if fuel == 'Benzine':
-        check_in(vehicle)
+        check_in(license)
     else:
         max_date = datetime.strptime('2001-01-01', '%Y-%m-%d')
         date_afgiteDatum = datetime.strptime(str(vehicle['datumeersteafgiftenederland'])[:10], '%Y-%m-%d')
         if date_afgiteDatum > max_date:
-            check_in(vehicle)
+            check_in(license)
         else:
             print('Sorry, maar deze vervuilende diesel mag er niet.')
 
-def check_in(vehicle):
+def check_in(license):
     connection = pymysql.connect(host='localhost',
                                  user='root',
                                  password='',
@@ -76,10 +82,65 @@ def check_in(vehicle):
                                  cursorclass=pymysql.cursors.DictCursor)
     try:
         with connection.cursor() as cursor:
-            sql = "INSERT INTO `cars` (`license_plate`) VALUES (%s)"
-            cursor.execute(sql, str(vehicle['kenteken']))
+            sql = "INSERT INTO `cars` (`license_plate`, `garage_entry_time`) VALUES (%s, now())"
+            cursor.execute(sql, encrypt_info(license))
             connection.commit()
     finally:
         connection.close()
 
-print(acceptRequest(getVehicleInfo(getLicensePlate('kenteken_2.jpg'))))
+def check_out(license):
+    encrypted_license = encrypt_info(license)
+    connection = pymysql.connect(host='localhost',
+                                 user='root',
+                                 password='',
+                                 db='parkeergarage',
+                                 cursorclass=pymysql.cursors.DictCursor)
+    try:
+        with connection.cursor() as cursor:
+            sql = "UPDATE `cars` SET `garage_leave_time` = now(), `garage_entry_time` = garage_entry_time WHERE `license_plate` = %s"
+            cursor.execute(sql, encrypted_license)
+            connection.commit()
+    finally:
+        connection.close()
+
+
+def check_if_exist(license):
+    encrypted_license = encrypt_info(license)
+    connection = pymysql.connect(host='localhost',
+                                 user='root',
+                                 password='',
+                                 db='parkeergarage',
+                                 cursorclass=pymysql.cursors.DictCursor)
+    try:
+        with connection.cursor() as cursor:
+            sql = "SELECT * FROM `cars` WHERE `license_plate` = %s"
+            cursor.execute(sql, encrypted_license)
+            result = cursor.fetchone()
+            return result
+    finally:
+        connection.close()
+
+
+def encrypt_info(license):
+    # A block size of 16 equals 128 bits
+    BLOCK_SIZE = 16
+    PADDING = '{'
+    pad = lambda s: s + (BLOCK_SIZE - len(s) % BLOCK_SIZE) * PADDING
+    # Encrypt with AES, encode with base64
+    EncodeAES = lambda c, s:base64.b64encode(c.encrypt(pad(s)))
+    # Generate a randomized secret key
+    secret = b"H\x04 \x9e\x10\x16\xf8\xba\x0b2\xf8\xef}'\x90u"
+    # Generate the cipher object using the key
+    cipher = AES.new(secret)
+    # encode the license plate
+    encoded = EncodeAES(cipher, license)
+    return encoded
+
+# print(acceptRequest(getVehicleInfo(getLicensePlate('kenteken.png'))))
+license = getLicensePlate('kenteken.png')
+
+if(check_if_exist(license) is None):
+    vehicle = getVehicleInfo(license)
+    acceptRequest(vehicle, license)
+else:
+    check_out(license)
