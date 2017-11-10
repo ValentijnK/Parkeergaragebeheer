@@ -71,7 +71,7 @@ def accept_request(vehicle, license):
         if issue_date > max_date:
             check_in(license)
         else:
-            print('Sorry, maar deze vervuilende diesel mag er niet in.')
+            print('Sorry, maar deze vervuilende diesel mag er niet.')
 
 
 def check_in(license):
@@ -89,7 +89,7 @@ def check_in(license):
         connection.close()
 
 
-def check_out(license, id):
+def check_out(license):
     encrypted_license = encrypt_info(license)
     connection = pymysql.connect(host='localhost',
                                  user='root',
@@ -98,8 +98,8 @@ def check_out(license, id):
                                  cursorclass=pymysql.cursors.DictCursor)
     try:
         with connection.cursor() as cursor:
-            sql = "UPDATE `cars` SET `garage_leave_time` = now(), `garage_entry_time` = garage_entry_time WHERE `license_plate` = %s AND `id` = %s"
-            cursor.execute(sql, (encrypted_license, id))
+            sql = "UPDATE `cars` SET `garage_leave_time` = now(), `garage_entry_time` = garage_entry_time WHERE `license_plate` = %s"
+            cursor.execute(sql, encrypted_license)
             connection.commit()
     finally:
         connection.close()
@@ -115,26 +115,6 @@ def check_if_exist(license):
     try:
         with connection.cursor() as cursor:
             sql = "SELECT * FROM `cars` WHERE `license_plate` = %s"
-            cursor.execute(sql, encrypted_license)
-            result = cursor.fetchone()
-            # print(result)
-            if result is None:
-                return result
-            else:
-                return True
-    finally:
-        connection.close()
-
-def get_vehicle_by_id(license):
-    encrypted_license = encrypt_info(license)
-    connection = pymysql.connect(host='localhost',
-                                 user='root',
-                                 password='',
-                                 db='parkeergarage',
-                                 cursorclass=pymysql.cursors.DictCursor)
-    try:
-        with connection.cursor() as cursor:
-            sql = "SELECT * FROM `cars` WHERE `license_plate` = %s ORDER BY `id` DESC LIMIT 1"
             cursor.execute(sql, encrypted_license)
             result = cursor.fetchone()
             return result
@@ -159,7 +139,7 @@ def encrypt_info(info):
 
 
 # Extra Assignment
-def billing(license, id):
+def billing(license):
     encrypted_license = encrypt_info(license)
     connection = pymysql.connect(host='localhost',
                                  user='root',
@@ -168,8 +148,8 @@ def billing(license, id):
                                  cursorclass=pymysql.cursors.DictCursor)
     try:
         with connection.cursor() as cursor:
-            sql = "SELECT * FROM `cars` WHERE `license_plate` = %s AND `id` = %s"
-            cursor.execute(sql, (encrypted_license, id))
+            sql = "SELECT * FROM `cars` WHERE `license_plate` = %s"
+            cursor.execute(sql, encrypted_license)
             result = cursor.fetchone()
     finally:
         connection.close()
@@ -187,8 +167,8 @@ def billing(license, id):
                                          cursorclass=pymysql.cursors.DictCursor)
     try:
         with billing_connection.cursor() as cursor:
-            sql = "UPDATE `cars` SET `garage_entry_time` = garage_entry_time, `garage_leave_time` = garage_leave_time, `email` = %s WHERE `license_plate` = %s AND `id` = %s"
-            cursor.execute(sql, (encrypt_info(email), encrypted_license, id))
+            sql = "UPDATE `cars` SET `garage_entry_time` = garage_entry_time, `garage_leave_time` = garage_leave_time, `email` = %s WHERE `license_plate` = %s"
+            cursor.execute(sql, (encrypt_info(email), encrypted_license))
             billing_connection.commit()
     finally:
         billing_connection.close()
@@ -196,20 +176,11 @@ def billing(license, id):
     print('Er wordt een factuur verzonden naar ' + str(email))
 
 
-license = get_license_plate('kenteken_diesel_1997.jpg')
-if check_if_exist(license) is None:
-    print('Voertuig bestaat niet. Voertuig beoordelen / inchecken...')
+license = get_license_plate('kenteken.png')
+
+if (check_if_exist(license) is None):
     vehicle = get_vehicle_info(license)
     accept_request(vehicle, license)
-elif check_if_exist(license) is True:
-    vehicle = get_vehicle_by_id(license)
-    if vehicle['garage_leave_time'] is None:
-        print('Voertuig uitchecken en betalen')
-        check_out(license, vehicle['id'])
-        billing(license, vehicle['id'])
-    else:
-        print('Voertuig is eerder hier geweest! Voertuig inchecken...')
-        vehicle = get_vehicle_info(license)
-        accept_request(vehicle, license)
-
-
+else:
+    check_out(license)
+    billing(license)
