@@ -53,10 +53,13 @@ Handleiding
 -----------
 
 Het programma wordt gerund in de IDE. De license variabele kan worden aangepast (regel 201).
+
 Hier kan de gebruiker één van de voorbeeld foto's inzetten. (zie de map license_plates voor de namen)
+
 De gebruiker kan ook extra foto's toevoegen aan de map.
 
 
 Als de gebruiker het programma runt zal hij de output zien in de terminal.
-De gebruiker kan dit checken met een database programma zoals: MySQL Workbench
+
+De gebruiker kan dit checken met een database programma zoals: MySQL Workbench.
 
