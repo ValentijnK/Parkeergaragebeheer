@@ -195,7 +195,7 @@ def billing(license, id):
     print('Er wordt een factuur verzonden naar ' + str(email))
 
 
-license = get_license_plate('kenteken_diesel_1997.jpg')
+license = get_license_plate('kenteken_bmw.png')
 if check_if_exist(license) is None:
     print('Voertuig bestaat niet. Voertuig beoordelen / inchecken...')
     vehicle = get_vehicle_info(license)
