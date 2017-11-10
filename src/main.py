@@ -178,6 +178,9 @@ def billing(license, id):
     h, m = divmod(m, 60)
     print("De parkeertijd bedroeg %d uur %02d minuten %02d seconden" % (h, m, s) + ' op kenteken ' + license)
     email = input('Vul hier uw e-mailadres in:')
+    if '@' not in email:
+        print('Vul a.u.b. een geldig e-mailadres in.')
+        email = input('Vul hier uw e-mailadres in:')
 
     billing_connection = pymysql.connect(host='localhost',
                                          user='root',
