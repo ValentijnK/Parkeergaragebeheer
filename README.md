@@ -41,7 +41,6 @@ db_name = 'parkeergarage'
 user = 'root'
 password = ''
 
-
 ```
 
 De gebruiker kan er ook voor kiezen andere parameters te gebruiken, die moeten dan handmatig worden aangepast in de code (hardcoded)
@@ -49,3 +48,15 @@ De gebruiker kan er ook voor kiezen andere parameters te gebruiken, die moeten d
 **Note**
 
 Met het bijgeleverde sql bestand kan de tabel worden opgebouwd.
+
+Handleiding
+-----------
+
+Het programma wordt gerund in de IDE. De license variabele kan worden aangepast (regel 201).
+Hier kan de gebruiker één van de voorbeeld foto's inzetten. (zie de map license_plates voor de namen)
+De gebruiker kan ook extra foto's toevoegen aan de map.
+
+
+Als de gebruiker het programma runt zal hij de output zien in de terminal.
+De gebruiker kan dit checken met een database programma zoals: MySQL Workbench
+
